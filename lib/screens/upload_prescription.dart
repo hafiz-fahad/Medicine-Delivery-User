@@ -1,17 +1,14 @@
 import 'dart:async';
 
-import 'package:al_asar_user/provider/zone_area_provider.dart';
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/provider/order_provider.dart';
-import 'package:al_asar_user/provider/user_provider.dart';
-import 'package:al_asar_user/widgets/common.dart';
+import 'package:meds_at_home/provider/order_provider.dart';
+import 'package:meds_at_home/provider/user_provider.dart';
+import 'package:meds_at_home/widgets/common.dart';
 import 'package:provider/provider.dart';
 
 import 'home.dart';
@@ -50,41 +47,12 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
 //    Navigator.of(context).pushReplacement(PageRouteBuilder(
 //        pageBuilder: (_, __, ___) => new HomePage()));
   }
-  List<DocumentSnapshot> zoneAreaListSnapshot = <DocumentSnapshot>[];
-  List<DropdownMenuItem<String>> zoneAreaListDropDown =
-  <DropdownMenuItem<String>>[];
-  ZoneAreaService zoneAreaService = ZoneAreaService();
-
-  _getZoneArea() async {
-    List<DocumentSnapshot> data = await zoneAreaService.getZoneAreaList();
-    print(data.length);
-    setState(() {
-      zoneAreaListSnapshot = data;
-      zoneAreaListDropDown = getZoneAreaListDropdown();
-    });
-  }
-
-  List<DropdownMenuItem<String>> getZoneAreaListDropdown() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (int i = 0; i < zoneAreaListSnapshot.length; i++) {
-      setState(() {
-        items.insert(
-            0,
-            DropdownMenuItem(
-                child: Text(zoneAreaListSnapshot[i].data['zone_name']),
-                value: i.toString()));
-      });
-    }
-    return items;
-  }
-
 
   String zoneTypeByFetching;
   String zoneTypeUpdateDelivery;
   @override
   void initState() {
     super.initState();
-    _getZoneArea();
     _updateNameController = TextEditingController(text: widget.user.data['name']);
     _updatePhoneController = TextEditingController(text: widget.user.data['phone']);
     _updateHouseController = TextEditingController(text: widget.user.data['house_no']);
@@ -98,19 +66,7 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
   @override
   Widget build(BuildContext context) {
     final users = Provider.of<UserProvider>(context);
-    return zoneAreaListDropDown.length == 0
-        ?Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: Colors.white,
-      child: Center(
-        child: AwesomeLoader(
-          loaderType: AwesomeLoader.AwesomeLoader2,
-          color: Color(0xff01783e),
-        ),
-      ),
-    )
-        :Scaffold(
+    return Scaffold(
       appBar: AppBar(
         leading: InkWell(
             onTap: () {
@@ -128,7 +84,7 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color:  Color(0xff01783e)),
+        iconTheme: IconThemeData(color:  Color(0xff008db9)),
       ),
       body: SafeArea(
         child:  Container(
@@ -147,45 +103,10 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
                             borderSide: BorderSide(
                                 color: Colors.grey.withOpacity(0.5), width: 2.5),
                             onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return new CupertinoAlertDialog(
-                                      actions: [
-                                        CupertinoDialogAction(
-                                          isDefaultAction: true,
-                                          child: Column(
-                                            children: <Widget>[
-                                              Text('Gallery'),
-                                            ],
-                                          ),
-                                          onPressed: (){
-                                            Navigator.pop(context);
-                                            _selectImage(
-                                              ImagePicker.pickImage(
-                                                  source: ImageSource.gallery),
-                                            );
-                                          },
-                                        ),
-                                        CupertinoDialogAction(
-                                          isDefaultAction: true,
-                                          child: Column(
-                                            children: <Widget>[
-                                              Text('Camera'),
-                                            ],
-                                          ),
-                                          onPressed: (){
-                                            Navigator.pop(context);
-                                            _selectImage(
-                                              ImagePicker.pickImage(
-                                                  source: ImageSource.camera),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  });
-
+                              _selectImage(
+                                ImagePicker.pickImage(
+                                    source: ImageSource.gallery),
+                              );
                             },
                             child: _displayChild1()),
                       ),
@@ -216,11 +137,27 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
                 Padding(padding: EdgeInsets.only(top: 10.0)),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration.collapsed(),
-                  hint: Text(zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data['zone_name'].toString(),
+                  hint: Text(zoneList[int.parse(zoneTypeByFetching)]['name'].toString(),
                     style: TextStyle(color: Colors.black),),
-                  items:zoneAreaListDropDown,
+                  items: List.generate(zoneList.length, (index){
+                    return DropdownMenuItem(
+                      child:
+                      Padding(
+                        padding: const EdgeInsets
+                            .only(
+                            left:
+                            10),
+                        child: Text(zoneList[index]
+                        [
+                        'name']
+                            .toString()),
+                      ),
+                      value: index.toString(),
+                    );
+                  }),
                   onChanged: (value) {
                     setState(() {
+                      zoneTypeUpdateDelivery = value;
                       zoneTypeByFetching = value;
                     });
                     print(value);
@@ -309,26 +246,17 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
-                  print("${DateTime.now().toString()}");
-                  print("${int.parse(DateTime.now().toString().substring(11,13).toString())}");
-
-                  if(int.parse(DateTime.now().toString().substring(11,13).toString()) < 10 ||
-                      int.parse(DateTime.now().toString().substring(11,13).toString()) > 22){
-                    _showDialog3(context);
-                  }else{
-                    validateAndUpload();
-                    if(_image1 != null){
-                      _showDialog2(context);
-                      StartTime();
-                    }
+                  validateAndUpload();
+                  if(_image1 != null){
+                    _showDialog2(context);
+                    StartTime();
                   }
-
                 },
                 child: Container(
                   height: 55.0,
                   width: 300.0,
                   decoration: BoxDecoration(
-                      color:  Color(0xff01783e),
+                      color:  Color(0xff008db9),
                       borderRadius: BorderRadius.all(Radius.circular(40.0))),
                   child: Center(
                     child: Text(
@@ -422,12 +350,9 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
             'customer_name': _updateNameController.text,
             'address': 'House # ${_updateHouseController.text}\, ${_updateStreetController.text}\, ${_updateAreaController.text}',
             'postal_code': _updatePCodeController.text,
-            'phone': _updatePhoneController.text,
-            'zone_name': zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data['zone_name'].toString(),
-            'delivery_amount': double.parse(zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data['zone_value']),
+            'zone_name': zoneList[int.parse(zoneTypeByFetching)]['name'],
             'date': Timestamp.now(),
             "picture":imageUrl1,
-            'accept_status': false,
           });
 //          Navigator.pop(context);
         });
@@ -510,33 +435,6 @@ _showDialog2(BuildContext ctx) {
               padding: const EdgeInsets.only(top: 30.0, bottom: 40.0),
               child: Text(
                 "Your Order Place Successfully!!\nOur Pharmacist contact to you soon...",
-                style: _txtCustomSub,
-              ),
-            )),
-      ],
-    ),
-  );
-}
-_showDialog3(BuildContext ctx) {
-  showDialog(
-    context: ctx,
-    barrierDismissible: true,
-    child: SimpleDialog(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.only(top: 30.0, right: 60.0, left: 60.0),
-          color: Colors.white,
-          child: Image.asset(
-            "images/oops.png",
-            height: 110.0,
-//            color: Colors.lightGreen,
-          ),
-        ),
-        Center(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                "Our Servies is between 10AM - 10PM",
                 style: _txtCustomSub,
               ),
             )),

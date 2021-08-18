@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/screens/product_detail.dart';
+import 'package:meds_at_home/screens/product_detail.dart';
 
 class Products extends StatefulWidget {
   @override

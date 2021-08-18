@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:al_asar_user/db/users.dart';
+import 'package:meds_at_home/db/users.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:al_asar_user/screens/login.dart';
+import 'package:meds_at_home/screens/login.dart';
 
 enum Status{Uninitialized, Authenticated, Authenticating, Unauthenticated}
 
@@ -15,7 +15,7 @@ class UserProvider with ChangeNotifier{
   Status get status => _status;
   FirebaseUser get user => _user;
   Firestore _firestore = Firestore.instance;
-  // UserServices _userServices = UserServices();
+  UserServices _userServices = UserServices();
 
   UserProvider.initialize(): _auth = FirebaseAuth.instance{
     _auth.onAuthStateChanged.listen(_onStateChanged);

@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/provider/order_provider.dart';
-import 'package:al_asar_user/screens/Delivery.dart';
-import 'package:al_asar_user/screens/home.dart';
+import 'package:meds_at_home/provider/order_provider.dart';
+import 'package:meds_at_home/screens/Delivery.dart';
+import 'package:meds_at_home/screens/home.dart';
 import 'package:image_picker/image_picker.dart';
 
 
@@ -21,7 +20,7 @@ class Payment extends StatefulWidget {
   final DocumentSnapshot user;
   final List<String> productDetail;
   final bool prescriptionRequired;
-  final Map<String, dynamic> zoneMap;
+  final Map<String, String> zoneMap;
 
   Payment({
     this.user,
@@ -143,15 +142,14 @@ class _PaymentState extends State<Payment> {
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xff01783e)),
+        iconTheme: IconThemeData(color: Color(0xff008db9)),
       ),
       body: SingleChildScrollView(
         child: Container(
-//          height: MediaQuery.of(context).size.height,
-            alignment: Alignment.center,
+          alignment: Alignment.center,
 //          color: Colors.white,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -173,7 +171,7 @@ class _PaymentState extends State<Payment> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: RichText(text: TextSpan(
                                     children: [
-                                      TextSpan(text: '\t\tCash On Delivery\n',
+                                      TextSpan(text: 'Cash On Delivery\n',
                                           style: TextStyle(fontSize: 25)),
                                       TextSpan(text: 'You Pay For The Merchandise Upon Arrival\n',
                                           style: TextStyle(fontSize: 12)),
@@ -210,44 +208,10 @@ class _PaymentState extends State<Payment> {
                                         width: 120,
                                         child: OutlineButton(
                                             onPressed: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext context) {
-                                                    return new CupertinoAlertDialog(
-                                                      actions: [
-                                                        CupertinoDialogAction(
-                                                          isDefaultAction: true,
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text('Gallery'),
-                                                            ],
-                                                          ),
-                                                          onPressed: (){
-                                                            Navigator.pop(context);
-                                                            _selectImage(
-                                                              ImagePicker.pickImage(
-                                                                  source: ImageSource.gallery),
-                                                            );
-                                                          },
-                                                        ),
-                                                        CupertinoDialogAction(
-                                                          isDefaultAction: true,
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text('Camera'),
-                                                            ],
-                                                          ),
-                                                          onPressed: (){
-                                                            Navigator.pop(context);
-                                                            _selectImage(
-                                                              ImagePicker.pickImage(
-                                                                  source: ImageSource.camera),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ],
-                                                    );
-                                                  });
+                                              _selectImage(
+                                                ImagePicker.pickImage(
+                                                    source: ImageSource.gallery),
+                                              );
                                             },
                                             child: _displayChild1()
                                           //                            Image.asset('icons/addImage.png')
@@ -262,46 +226,44 @@ class _PaymentState extends State<Payment> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                if(totalBill < 2000)
+                                if(totalBill < 500)
                                   Padding(
                                     padding: const EdgeInsets.all(1.0),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
                                         new Radio(
-                                          activeColor: Color(0xff01783e),
                                           value: 0,
                                           groupValue: _radioValue,
                                           onChanged: _handleRadioValueChange,
                                         ),
                                         new RichText(text: TextSpan(
                                           children: [
-                                            TextSpan(text: 'Rountine Deliervery\t\t\t\t\t\t\t\t(45min - 2hrs)',
+                                            TextSpan(text: 'Rountine Deliervery'/*\t\t\t\t\t\t\t\t(within 24hrs)\n*/,
                                                 style: TextStyle(fontSize: 12)),
-                                            TextSpan(text: '\nCharges Rs. ${widget.zoneMap['zone_value'].toString()}\n',
+                                            TextSpan(text: '\nCharges Rs. ${widget.zoneMap['value']}\n',
                                                 style: TextStyle(fontSize: 12)),
-//                                            TextSpan(text: 'Due to Order less than Rs. 2000\n',
-//                                                style: TextStyle(fontSize: 12)),
+                                            TextSpan(text: 'Due to Order less than Rs. 500\n',
+                                                style: TextStyle(fontSize: 12)),
                                           ],style: TextStyle(color: Colors.black)
                                         ))
                                       ],
                                     ),
                                   ),
-                                if(totalBill >= 2000)
+                                if(totalBill >= 500)
                                   Padding(
                                     padding: const EdgeInsets.all(1.0),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
                                         new Radio(
-                                          activeColor: Color(0xff01783e),
                                           value: 0,
                                           groupValue: _radioValue,
                                           onChanged: _handleRadioValueChange,
                                         ),
                                         new RichText(text: TextSpan(
                                             children: [
-                                              TextSpan(text: 'Rountine Deliervery\t\t\t\t\t\t\t\t(45min - 2hrs)',
+                                              TextSpan(text: 'Rountine Deliervery'/*\t\t\t\t\t\t\t\t(within 24hrs)\n*/,
                                                   style: TextStyle(fontSize: 12)),
                                               TextSpan(text: '\nCharges Rs. 0\n',
                                                   style: TextStyle(fontSize: 12)),
@@ -310,32 +272,31 @@ class _PaymentState extends State<Payment> {
                                       ],
                                     ),
                                   ),
-//                                Padding(
-//                                  padding: const EdgeInsets.all(1.0),
-//                                  child: Row(
-//                                    mainAxisAlignment: MainAxisAlignment.center,
-//                                    children: <Widget>[
-//                                      new Radio(
-//                                        activeColor: Color(0xff01783e),
-//                                        value: 1,
-//                                        groupValue: _radioValue,
-//                                        onChanged: _handleRadioValueChange,
+                                Padding(
+                                  padding: const EdgeInsets.all(1.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      new Radio(
+                                        value: 1,
+                                        groupValue: _radioValue,
+                                        onChanged: _handleRadioValueChange,
+                                      ),
+                                      new RichText(text: TextSpan(
+                                          children: [
+                                            TextSpan(text: 'Urgent Deliervery\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n'/*(within 2hrs)\n*/,
+                                                style: TextStyle(fontSize: 12)),
+                                            TextSpan(text: 'Charges Rs. 50\n',
+                                                style: TextStyle(fontSize: 12)),
+                                          ],style: TextStyle(color: Colors.black)
+                                      ))
+//                                      Text(
+//                                        'Urgent Delievery\t\t\t\t\t\t\t\t\t(within 2hrs)',
+//                                        style: new TextStyle(fontSize: 12.0),
 //                                      ),
-//                                      new RichText(text: TextSpan(
-//                                          children: [
-//                                            TextSpan(text: 'Urgent Deliervery\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n'/*(within 2hrs)\n*/,
-//                                                style: TextStyle(fontSize: 12)),
-//                                            TextSpan(text: 'Charges Rs. 50\n',
-//                                                style: TextStyle(fontSize: 12)),
-//                                          ],style: TextStyle(color: Colors.black)
-//                                      ))
-////                                      Text(
-////                                        'Urgent Delievery\t\t\t\t\t\t\t\t\t(within 2hrs)',
-////                                        style: new TextStyle(fontSize: 12.0),
-////                                      ),
-//                                    ],
-//                                  ),
-//                                ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                                 Row(
@@ -347,15 +308,15 @@ class _PaymentState extends State<Payment> {
                                       children: [
                                       TextSpan(text: 'The Total Payable Amount is\n',
                                           style: TextStyle(fontSize: 15)),
-                                      if(_radioValue == 0 && totalBill < 2000)
-                                        TextSpan(text: 'Rs. ${totalBill+ int.parse(widget.zoneMap['zone_value'].toString())} \n',
-                                          style: TextStyle(fontSize: 30,color: Color(0xff01783e)),),
-                                      if(_radioValue == 0 && totalBill >= 2000)
+                                      if(_radioValue == 0 && totalBill < 500)
+                                        TextSpan(text: 'Rs. ${totalBill+20} \n',
+                                          style: TextStyle(fontSize: 30,color: Color(0xff008db9)),),
+                                      if(_radioValue == 0 && totalBill >= 500)
                                         TextSpan(text: 'Rs. ${totalBill} \n',
-                                          style: TextStyle(fontSize: 30,color: Color(0xff01783e)),),
+                                          style: TextStyle(fontSize: 30,color: Color(0xff008db9)),),
                                       if(_radioValue == 1)
                                         TextSpan(text: 'Rs. ${totalBill+50} \n',
-                                          style: TextStyle(fontSize: 30,color: Color(0xff01783e)),),
+                                          style: TextStyle(fontSize: 30,color: Color(0xff008db9)),),
                                       TextSpan(text: '\n'),
 //                                      TextSpan(text: '\n'),
 //                                      TextSpan(text: '\n'),
@@ -376,7 +337,7 @@ class _PaymentState extends State<Payment> {
                         ),
                       ),
                     ),
-                    Padding(padding: EdgeInsets.only(top: 110.0)),
+                Padding(padding: EdgeInsets.only(top: 110.0)),
               ],
             ),
           ),
@@ -414,7 +375,7 @@ class _PaymentState extends State<Payment> {
                   height: 55.0,
                   width: 300.0,
                   decoration: BoxDecoration(
-                      color: Color(0xff01783e),
+                      color: Color(0xff008db9),
                       borderRadius: BorderRadius.all(Radius.circular(40.0))),
                   child: Center(
                     child: Text(
@@ -489,7 +450,7 @@ class _PaymentState extends State<Payment> {
         _orderService.uploadOrder({
           'userId': widget.user.data['uid'],
           'customer_name': widget.name,
-          'zone_name': widget.zoneMap['zone_name'],
+          'zone_name': widget.zoneMap['name'],
           'address': 'House # ${widget.houseNo}\, ${widget.street}\, ${widget.area}',
           'postal_code': widget.pCode,
           'phone': widget.phone,
@@ -497,10 +458,9 @@ class _PaymentState extends State<Payment> {
           'products_details': productDetail,
           'total_bill': totalBill,
           'picture': imageUrl1,
-          'accept_status': false,
-          if(_radioValue == 0 && totalBill < 2000)
-            'delivery_amount': double.parse(widget.zoneMap['zone_value']),
-          if(_radioValue == 0 && totalBill >= 2000)
+          if(_radioValue == 0 && totalBill < 500)
+            'delivery_amount': double.parse(widget.zoneMap['value']),
+          if(_radioValue == 0 && totalBill >= 500)
             'delivery_amount': 0,
           if(_radioValue == 1)
             'delivery_amount': 50,
@@ -515,7 +475,7 @@ class _PaymentState extends State<Payment> {
       _orderService.uploadOrder({
         'userId': widget.user.data['uid'],
         'customer_name': widget.name,
-        'zone_name': widget.zoneMap['zone_name'],
+        'zone_name': widget.zoneMap['name'],
         'address': 'House # ${widget.houseNo}\, ${widget.street}\, ${widget.area}',
         'postal_code': widget.pCode,
         'phone': widget.phone,
@@ -523,10 +483,9 @@ class _PaymentState extends State<Payment> {
         'products_details': productDetail,
         'total_bill': totalBill,
         'picture': null,
-        'accept_status': false,
-        if(_radioValue == 0 && totalBill < 2000)
-          'delivery_amount': double.parse(widget.zoneMap['zone_value']),
-        if(_radioValue == 0 && totalBill >= 2000)
+        if(_radioValue == 0 && totalBill < 500)
+          'delivery_amount': double.parse(widget.zoneMap['value']),
+        if(_radioValue == 0 && totalBill >= 500)
           'delivery_amount': 0,
         if(_radioValue == 1)
           'delivery_amount': 50,

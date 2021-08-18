@@ -1,8 +1,4 @@
-import 'package:al_asar_user/widgets/search.dart';
 import 'package:flutter/material.dart';
-
-List<dynamic> productsGetList;
-List<Note> productList = List<Note>();
 
 //   methods
 

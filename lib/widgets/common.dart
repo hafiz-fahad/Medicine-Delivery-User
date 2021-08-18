@@ -14,8 +14,6 @@ void changeScreen(BuildContext context, Widget widget){
 void changeScreenReplacement(BuildContext context, Widget widget){
   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => widget));
 }
-
-
 List zoneList = [
   {"name":"Peoples Colony # 1" ,"value" : "10"},
   {"name":"Peoples Colony # 2" ,"value" : "20"},

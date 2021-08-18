@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:al_asar_user/Compenents/cart_products.dart';
-import 'package:al_asar_user/screens/product_detail.dart';
+import 'package:meds_at_home/Compenents/cart_products.dart';
+import 'package:meds_at_home/screens/product_detail.dart';
 
 
 class CartCard extends StatelessWidget {

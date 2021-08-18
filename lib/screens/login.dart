@@ -1,10 +1,11 @@
-import 'package:al_asar_user/screens/signup.dart';
-import 'package:al_asar_user/widgets/common.dart';
-import 'package:al_asar_user/widgets/loading.dart';
+import 'package:meds_at_home/screens/signup.dart';
+import 'package:meds_at_home/widgets/common.dart';
+import 'package:meds_at_home/widgets/loading.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
+import 'authentication.dart';
 import 'home.dart';
 
 class Login extends StatefulWidget {
@@ -66,8 +67,8 @@ class _LoginState extends State<Login> {
                           child: Container(
                               alignment: Alignment.topCenter,
                               child: Image.asset(
-                                'images/App icon.png',
-                                width: 150.0,
+                                'images/logo.png',
+                                width: 260.0,
                               )),
                         ),
 
@@ -148,7 +149,7 @@ class _LoginState extends State<Login> {
                           const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                           child: Material(
                               borderRadius: BorderRadius.circular(20.0),
-                              color: Color(0xff01783e),
+                              color: Color(0xff008db9),
                               elevation: 0.0,
                               child: MaterialButton(
                                 onPressed: () async{
@@ -204,7 +205,7 @@ class _LoginState extends State<Login> {
                                     child: Text(
                                       "Create an account",
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(color: Colors.black,fontSize: 16),
+                                      style: TextStyle(color: Colors.black),
                                     ))),
                           ],
                         ),

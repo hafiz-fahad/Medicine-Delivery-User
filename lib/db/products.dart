@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/models/product.dart';
+import 'package:meds_at_home/models/product.dart';
 import 'dart:async';
 
 class ProductsService{

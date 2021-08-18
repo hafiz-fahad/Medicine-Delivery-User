@@ -15,8 +15,6 @@ class OrderService{
     String oID = id.v1();
     data["orderId"] = oID;
     _firestore.collection(ref1).document(oID).setData(data);
-
-
   }
   void uploadOrder(Map<String, dynamic> data) {
     var id = Uuid();

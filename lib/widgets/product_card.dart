@@ -1,14 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/screens/home.dart';
-import 'package:al_asar_user/screens/product_detail.dart';
+import 'package:meds_at_home/screens/home.dart';
+import 'package:meds_at_home/screens/product_detail.dart';
 
 class ProductCard extends StatelessWidget {
-  final productMap;
+  final DocumentSnapshot product;
   final DocumentSnapshot user;
 
-  ProductCard({this.productMap,this.user});
+  ProductCard({this.product,this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,8 @@ class ProductCard extends StatelessWidget {
             onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (_)=>
                   ProductDetails(
-                    product: productMap,
+//                          productDetailList: [productList[index]],
+                    product: product,
                     user: user,)));
             },
             child: Card(
@@ -36,7 +37,7 @@ class ProductCard extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        AutoSizeText('${productMap['name']} ',
+                        AutoSizeText('${product['name']} ',
                           style: TextStyle(
                               fontSize: 20,
                               color: Colors.white
@@ -46,7 +47,7 @@ class ProductCard extends StatelessWidget {
                           textScaleFactor: 1.0,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        AutoSizeText('Rs. ${productMap['unit_price']} ',
+                        AutoSizeText('Rs. ${product['unit_price']} ',
                           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold,color: Colors.white),),
                       ],
                     )

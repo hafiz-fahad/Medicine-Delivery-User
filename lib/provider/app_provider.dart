@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/db/products.dart';
-import 'package:al_asar_user/models/product.dart';
+import 'package:meds_at_home/db/products.dart';
+import 'package:meds_at_home/models/product.dart';
 
 class AppProvider with ChangeNotifier{
   List<Product> _featuredProducts = [];

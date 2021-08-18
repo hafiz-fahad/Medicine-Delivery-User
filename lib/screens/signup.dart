@@ -1,8 +1,6 @@
-import 'package:al_asar_user/provider/user_provider.dart';
-import 'package:al_asar_user/provider/zone_area_provider.dart';
-import 'package:al_asar_user/widgets/common.dart';
-import 'package:al_asar_user/widgets/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:meds_at_home/provider/user_provider.dart';
+import 'package:meds_at_home/widgets/common.dart';
+import 'package:meds_at_home/widgets/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'home.dart';
@@ -43,41 +41,6 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
-  ZoneAreaService zoneAreaService = ZoneAreaService();
-
-  @override
-  void initState() {
-    super.initState();
-    _getZoneArea();
-  }
-
-  List<DocumentSnapshot> zoneAreaListSnapshot = <DocumentSnapshot>[];
-  List<DropdownMenuItem<String>> zoneAreaListDropDown =
-  <DropdownMenuItem<String>>[];
-
-  _getZoneArea() async {
-    List<DocumentSnapshot> data = await zoneAreaService.getZoneAreaList();
-    print(data.length);
-    setState(() {
-      zoneAreaListSnapshot = data;
-      zoneAreaListDropDown = getZoneAreaListDropdown();
-    });
-  }
-
-  List<DropdownMenuItem<String>> getZoneAreaListDropdown() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (int i = 0; i < zoneAreaListSnapshot.length; i++) {
-      setState(() {
-        items.insert(
-            0,
-            DropdownMenuItem(
-                child: Text(zoneAreaListSnapshot[i].data['zone_name']),
-                value: i.toString()));
-      });
-    }
-    return items;
-  }
-
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context);
@@ -110,8 +73,8 @@ class _SignUpState extends State<SignUp> {
                         child: Container(
                             alignment: Alignment.topCenter,
                             child: Image.asset(
-                              'images/App icon.png',
-                              width: 150.0,
+                              'images/logo.png',
+                              width: 200.0,
                             )),
                       ),
                       Padding(
@@ -269,7 +232,89 @@ class _SignUpState extends State<SignUp> {
                                     style: TextStyle(color: Colors.black),
                                   ),
                                 ),
-                                items: zoneAreaListDropDown,
+                                items: List.generate(zoneList.length, (index){
+                                  return DropdownMenuItem(
+                                    child:
+                                    Padding(
+                                      padding: const EdgeInsets
+                                          .only(
+                                          left:
+                                          10),
+                                      child: Text(zoneList[index]
+                                      [
+                                      'name']
+                                          .toString()),
+                                    ),
+                                    value: index.toString(),
+                                  );
+                                }),
+//                                [
+//
+//                                  DropdownMenuItem(
+//                                  value: "30",
+//                                  child: Padding(
+//                                    padding: const EdgeInsets.only(left: 10),
+//                                    child: Text(
+//                                      "Amin Town",
+//                                    ),
+//                                  ),
+//                                ),
+//                                  DropdownMenuItem(
+//                                    value: "2",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                        "Peoples Colony # 1",
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  DropdownMenuItem(
+//                                    value: "3",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                        "Peoples Colony # 2",
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  DropdownMenuItem(
+//                                    value: "4",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                        "Madina Town",
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  DropdownMenuItem(
+//                                    value: "5",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                        "Batala Colony",
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  DropdownMenuItem(
+//                                    value: "6",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                        "D Type",
+//                                      ),
+//                                    ),
+//                                  ),
+//                                  DropdownMenuItem(
+//                                    value: "7",
+//                                    child: Padding(
+//                                      padding: const EdgeInsets.only(left: 10),
+//                                      child: Text(
+//                                          "Kohinoor Town",
+//                                      ),
+//                                    ),
+//                                  ),
+//
+//                                ],
                                 onChanged: (value) {
                                   setState(() {
                                     zoneType = value;
@@ -413,7 +458,7 @@ class _SignUpState extends State<SignUp> {
                         const EdgeInsets.fromLTRB(14.0, 8.0, 14.0, 8.0),
                         child: Material(
                             borderRadius: BorderRadius.circular(20.0),
-                            color: Color(0xff01783e),
+                            color: Color(0xff008db9),
                             elevation: 0.0,
                             child: MaterialButton(
                               onPressed: () async{
@@ -423,8 +468,8 @@ class _SignUpState extends State<SignUp> {
                                       _email.text,
                                       _password.text,
                                       _phone.text,
-                                      zoneAreaListSnapshot[int.parse(zoneType)].data['zone_name'].toString(),
-                                      zoneAreaListSnapshot[int.parse(zoneType)].data['zone_value'].toString(),
+                                      zoneList[int.parse(zoneType)]['name'],
+                                      zoneList[int.parse(zoneType)]['value'],
                                       zoneType,
                                       _streetNo.text,
                                       _houseNo.text,

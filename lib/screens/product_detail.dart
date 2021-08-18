@@ -3,18 +3,18 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:al_asar_user/provider/user_provider.dart';
-import 'package:al_asar_user/screens/home.dart';
-// import 'package:numberpicker/numberpicker.dart';
+import 'package:meds_at_home/provider/user_provider.dart';
+import 'package:meds_at_home/screens/home.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'cart.dart';
-import 'package:al_asar_user/provider/cart_provider.dart';
+import 'package:meds_at_home/provider/cart_provider.dart';
 
 import 'cart_page.dart';
 import 'login.dart';
 
 class ProductDetails extends StatefulWidget {
-  final product;
+  final DocumentSnapshot product;
   final DocumentSnapshot user;
 
   ProductDetails({this.product,this.user});
@@ -57,7 +57,7 @@ class _ProductDetailsState extends State<ProductDetails> {
         elevation: 0.0,
         centerTitle: true,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xff01783e)),
+        iconTheme: IconThemeData(color: Color(0xff008db9)),
         leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();
@@ -74,7 +74,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                   Container(
                     height: 100,
                     child: Center(
-                      child: AutoSizeText(widget.product['name'],
+                      child: AutoSizeText(widget.product.data['name'],
                           style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),
                     ),
                   ),
@@ -90,7 +90,6 @@ class _ProductDetailsState extends State<ProductDetails> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               new Radio(
-                                activeColor: Color(0xff01783e),
                                 value: 0,
                                 groupValue: _radioValue,
                                 onChanged: _handleRadioValueChange,
@@ -99,8 +98,18 @@ class _ProductDetailsState extends State<ProductDetails> {
                                 'Per Unit',
                                 style: new TextStyle(fontSize: 16.0),
                               ),
+//                              new Radio(
+//                                value: 1,
+//                                groupValue: _radioValue,
+//                                onChanged: _handleRadioValueChange,
+//                              ),
+//                              new Text(
+//                                'Per Strip',
+//                                style: new TextStyle(
+//                                  fontSize: 16.0,
+//                                ),
+//                              ),
                               new Radio(
-                                activeColor: Color(0xff01783e),
                                 value: 2,
                                 groupValue: _radioValue,
                                 onChanged: _handleRadioValueChange,
@@ -184,7 +193,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                           if(_result == 0)
                                             TextSpan(
                                               text: 'Rs.${widget.product
-                                                  ['unit_price'] *
+                                                  .data['unit_price'] *
                                                   _currentValue}',
 //                                              text: 'Rs.${int.parse(widget.productDetailList[0].unitPrice) *
 //                                                  _currentValue}',
@@ -193,9 +202,9 @@ class _ProductDetailsState extends State<ProductDetails> {
                                                       .w600),),
                                           if(_result == 2)
                                               TextSpan(
-                                                text: 'Rs.${widget.product['unit_price'] *
+                                                text: 'Rs.${widget.product.data['unit_price'] *
                                                     _currentValue*
-                                                    widget.product['quantity_units_per_pack']}',
+                                                    widget.product.data['quantity_units_per_pack']}',
 //                                                text: 'Rs.${int.parse(widget.productDetailList[0].unitPrice) *
 //                                                    _currentValue*
 //                                                    int.parse(widget.productDetailList[0].quantity)}',
@@ -218,8 +227,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                                         padding: const EdgeInsets.all(1.0),
                                         child: RichText(text: TextSpan(
                                           children: [
-                                            TextSpan(text: 'Unit Price: Rs.${widget.product['unit_price']}'),
-                                            TextSpan(text: '\nUnits/pack: ${widget.product['quantity_units_per_pack']}'),
+                                            TextSpan(text: 'Unit Price: Rs.${widget.product.data['unit_price']}'),
+                                            TextSpan(text: '\nUnits/pack: ${widget.product.data['quantity_units_per_pack']}'),
                                           ],style: TextStyle(color: Colors.black),
                                         ),)
                                       ),
@@ -230,24 +239,24 @@ class _ProductDetailsState extends State<ProductDetails> {
                           ),
                         ),
                       Divider(color: Colors.blueGrey,),
-//                      Row(
-//                        mainAxisAlignment: MainAxisAlignment.start,
-//                        children: <Widget>[
-//                          Column(
-//                            children: <Widget>[
-//                              Padding(
-//                                padding: const EdgeInsets.all(8.0),
-//                                child: RichText(text: TextSpan(
-//                                  children: [
-//                                    TextSpan(text: 'Primary use:',style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-//                                    TextSpan(text: '\n${widget.product['description']}', style: TextStyle(color: Colors.black)),
-//                                  ],
-//                                ),)
-//                              ),
-//                            ],
-//                          ),
-//                        ],
-//                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RichText(text: TextSpan(
+                                  children: [
+                                    TextSpan(text: 'Primary use:',style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                                    TextSpan(text: '\n${widget.product.data['description']}', style: TextStyle(color: Colors.black)),
+                                  ],
+                                ),)
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       Divider(),
                     ],
                   ),
@@ -282,7 +291,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                     height: 55.0,
                     width: 150.0,
                     decoration: BoxDecoration(
-                        color: Color(0xff01783e),
+                        color: Color(0xff008db9),
                         borderRadius: BorderRadius.all(Radius.circular(40.0))),
                     child: Center(
                       child: Text(_pressed?
@@ -314,7 +323,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                     height: 55.0,
                     width: 150.0,
                     decoration: BoxDecoration(
-                        color: Color(0xff01783e),
+                        color: Color(0xff008db9),
                         borderRadius: BorderRadius.all(Radius.circular(40.0))),
                     child: Center(
                       child: Text(
@@ -329,6 +338,35 @@ class _ProductDetailsState extends State<ProductDetails> {
                   ),
                 ),
               ),
+//              if(users.status != Status.Authenticated)
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: InkWell(
+//                    onTap: () {
+//                      Navigator.push(
+//                          context, MaterialPageRoute(
+//                          builder: (_) =>
+//                              Login()));
+//                    },
+//                    child: Container(
+//                      height: 55.0,
+//                      width: 300.0,
+//                      decoration: BoxDecoration(
+//                          color: Colors.indigoAccent,
+//                          borderRadius: BorderRadius.all(Radius.circular(40.0))),
+//                      child: Center(
+//                        child: Text(
+//                          "Login to Shop",
+//                          style: TextStyle(
+//                              color: Colors.white,
+//                              fontWeight: FontWeight.w700,
+//                              fontSize: 16.5,
+//                              letterSpacing: 1.0),
+//                        ),
+//                      ),
+//                    ),
+//                  ),
+//                ),
             ],
           ),
         ),

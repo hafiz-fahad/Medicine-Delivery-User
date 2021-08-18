@@ -1,10 +1,8 @@
-import 'package:al_asar_user/provider/zone_area_provider.dart';
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 //import 'package:treva_shop_flutter/UI/BottomNavigationBar.dart';
-import 'package:al_asar_user/screens/Payment.dart';
-import 'package:al_asar_user/widgets/common.dart';
+import 'package:meds_at_home/screens/Payment.dart';
+import 'package:meds_at_home/widgets/common.dart';
 
 class Delivery extends StatefulWidget {
   final DocumentSnapshot user;
@@ -17,36 +15,6 @@ class Delivery extends StatefulWidget {
 }
 
 class _DeliveryState extends State<Delivery> {
-
-
-
-  List<DocumentSnapshot> zoneAreaListSnapshot = <DocumentSnapshot>[];
-  List<DropdownMenuItem<String>> zoneAreaListDropDown =
-  <DropdownMenuItem<String>>[];
-  ZoneAreaService zoneAreaService = ZoneAreaService();
-
-  _getZoneArea() async {
-    List<DocumentSnapshot> data = await zoneAreaService.getZoneAreaList();
-    print(data.length);
-    setState(() {
-      zoneAreaListSnapshot = data;
-      zoneAreaListDropDown = getZoneAreaListDropdown();
-    });
-  }
-
-  List<DropdownMenuItem<String>> getZoneAreaListDropdown() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (int i = 0; i < zoneAreaListSnapshot.length; i++) {
-      setState(() {
-        items.insert(
-            0,
-            DropdownMenuItem(
-                child: Text(zoneAreaListSnapshot[i].data['zone_name']),
-                value: i.toString()));
-      });
-    }
-    return items;
-  }
 
   int counter = 0;
   double totalBill = 0;
@@ -65,7 +33,6 @@ class _DeliveryState extends State<Delivery> {
   @override
   void initState() {
     super.initState();
-    _getZoneArea();
     _updateNameController = TextEditingController(text: widget.user.data['name']);
     _updatePhoneController = TextEditingController(text: widget.user.data['phone']);
     _updateHouseController = TextEditingController(text: widget.user.data['house_no']);
@@ -78,20 +45,7 @@ class _DeliveryState extends State<Delivery> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      zoneAreaListDropDown.length == 0
-          ?Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.white,
-        child: Center(
-          child: AwesomeLoader(
-            loaderType: AwesomeLoader.AwesomeLoader2,
-            color: Color(0xff01783e),
-          ),
-        ),
-      )
-          :Scaffold(
+    return Scaffold(
       appBar: AppBar(
         leading: InkWell(
             onTap: () {
@@ -109,7 +63,7 @@ class _DeliveryState extends State<Delivery> {
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color:  Color(0xff01783e)),
+        iconTheme: IconThemeData(color:  Color(0xff008db9)),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -119,16 +73,14 @@ class _DeliveryState extends State<Delivery> {
             child: Column(
 
               children: <Widget>[
-                Center(
-                  child: Text(
-                    "Where are your ordered items shipped ?",
-                    style: TextStyle(
-                        letterSpacing: 0.1,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 22.0,
-                        color:  Color(0xff01783e),
-                        fontFamily: "Gotik"),
-                  ),
+                Text(
+                  "Where are your ordered items shipped ?",
+                  style: TextStyle(
+                      letterSpacing: 0.1,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22.0,
+                      color:  Color(0xff008db9),
+                      fontFamily: "Gotik"),
                 ),
                 Padding(padding: EdgeInsets.only(top: 30.0)),
                 Text("Please Confirm Your Details",
@@ -136,7 +88,7 @@ class _DeliveryState extends State<Delivery> {
                     letterSpacing: 0.1,
 //                    fontWeight: FontWeight.w600,
                     fontSize: 14.0,
-                    color: Color(0xff01783e),
+                    color: Color(0xff008db9),
                     fontFamily: "Gotik"),),
                 Padding(padding: EdgeInsets.only(top: 10.0)),
                 TextFormField(
@@ -162,11 +114,27 @@ class _DeliveryState extends State<Delivery> {
                 Padding(padding: EdgeInsets.only(top: 10.0)),
                 DropdownButtonFormField<String>(
                   decoration: InputDecoration.collapsed(),
-                  hint: Text(zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data['zone_name'].toString(),
+                  hint: Text(zoneList[int.parse(zoneTypeByFetching)]['name'].toString(),
                     style: TextStyle(color: Colors.black),),
-                  items: zoneAreaListDropDown,
+                  items: List.generate(zoneList.length, (index){
+                    return DropdownMenuItem(
+                      child:
+                      Padding(
+                        padding: const EdgeInsets
+                            .only(
+                            left:
+                            10),
+                        child: Text(zoneList[index]
+                        [
+                        'name']
+                            .toString()),
+                      ),
+                      value: index.toString(),
+                    );
+                  }),
                   onChanged: (value) {
                     setState(() {
+                      zoneTypeUpdateDelivery = value;
                       zoneTypeByFetching = value;
                     });
                     print(value);
@@ -178,7 +146,7 @@ class _DeliveryState extends State<Delivery> {
                     else
                       return null;
                   },
-//                  value: zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data['zone_name'].toString(),
+//                                value: zoneType,
                 ),
                 Divider(color: Colors.grey,thickness: 1,),
                 Padding(padding: EdgeInsets.only(top: 10.0)),
@@ -270,14 +238,14 @@ class _DeliveryState extends State<Delivery> {
                             pCode: _updatePCodeController.text,
                             productDetail: widget.productDetail,
                             prescriptionRequired:widget.prescriptionRequired,
-                            zoneMap: zoneAreaListSnapshot[int.parse(zoneTypeByFetching)].data,
+                            zoneMap: zoneList[int.parse(zoneTypeByFetching)],
                           )));
                 },
                 child: Container(
                   height: 55.0,
                   width: 300.0,
                   decoration: BoxDecoration(
-                      color: Color(0xff01783e),
+                      color: Color(0xff008db9),
                       borderRadius: BorderRadius.all(Radius.circular(40.0))),
                   child: Center(
                     child: Text(

@@ -1,10 +1,8 @@
-import 'package:al_asar_user/provider/zone_area_provider.dart';
-import 'package:awesome_loader/awesome_loader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:al_asar_user/screens/home.dart';
-import 'package:al_asar_user/widgets/common.dart';
+import 'package:meds_at_home/screens/home.dart';
+import 'package:meds_at_home/widgets/common.dart';
 
 class UserProfilePage extends StatefulWidget {
 
@@ -26,33 +24,6 @@ class UserProfilePage extends StatefulWidget {
 
 class _UserProfilePageState extends State<UserProfilePage> {
 
-  List<DocumentSnapshot> zoneAreaListSnapshot = <DocumentSnapshot>[];
-  List<DropdownMenuItem<String>> zoneAreaListDropDown =
-  <DropdownMenuItem<String>>[];
-  ZoneAreaService zoneAreaService = ZoneAreaService();
-
-  _getZoneArea() async {
-    List<DocumentSnapshot> data = await zoneAreaService.getZoneAreaList();
-    print(data.length);
-    setState(() {
-      zoneAreaListSnapshot = data;
-      zoneAreaListDropDown = getZoneAreaListDropdown();
-    });
-  }
-
-  List<DropdownMenuItem<String>> getZoneAreaListDropdown() {
-    List<DropdownMenuItem<String>> items = new List();
-    for (int i = 0; i < zoneAreaListSnapshot.length; i++) {
-      setState(() {
-        items.insert(
-            0,
-            DropdownMenuItem(
-                child: Text(zoneAreaListSnapshot[i].data['zone_name']),
-                value: i.toString()));
-      });
-    }
-    return items;
-  }
 
   TextEditingController _nameController;
   TextEditingController _emailController;
@@ -78,7 +49,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   void initState() {
     super.initState();
-    _getZoneArea();
     _nameController = TextEditingController(text: widget.userDocument.data['name']);
     _emailController = TextEditingController(text: widget.userDocument.data['email']);
     _phoneController = TextEditingController(text: widget.userDocument.data['phone']);
@@ -109,19 +79,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return zoneAreaListDropDown.length == 0
-        ?Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      color: Colors.white,
-      child: Center(
-        child: AwesomeLoader(
-          loaderType: AwesomeLoader.AwesomeLoader2,
-          color: Color(0xff01783e),
-        ),
-      ),
-    )
-        :Scaffold(
+    return Scaffold(
       appBar: AppBar(
         leading: InkWell(
             onTap: () {
@@ -134,7 +92,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               false);
 //              Navigator.of(context).pop();
             },
-            child: Icon(Icons.arrow_back_ios,color: Color(0xff01783e),)),
+            child: Icon(Icons.arrow_back_ios)),
         elevation: 0.0,
         title: Text(
           "My Profile",
@@ -257,7 +215,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(12.0)),
                         ),
-                        color: Color(0xff01783e),
+                        color: Color(0xff008db9),
                         textColor: Colors.white,
 
                         child: Text('EDIT PROFILE'),
@@ -323,12 +281,27 @@ class _UserProfilePageState extends State<UserProfilePage> {
               ),
               DropdownButtonFormField<String>(
                 decoration: InputDecoration.collapsed(),
-                hint: Text(zoneAreaListSnapshot[int.parse(zoneTypeByFetchingForProfile)].data['zone_name'].toString(),
+                hint: Text(zoneList[int.parse(zoneTypeByFetchingForProfile)]['name'].toString(),
                   style: TextStyle(color: Colors.black),),
-                items: zoneAreaListDropDown,
+                items: List.generate(zoneList.length, (index){
+                  return DropdownMenuItem(
+                    child:
+                    Padding(
+                      padding: const EdgeInsets
+                          .only(
+                          left:
+                          10),
+                      child: Text(zoneList[index]
+                      [
+                      'name']
+                          .toString()),
+                    ),
+                    value: index.toString(),
+                  );
+                }),
                 onChanged: (value) {
                   setState(() {
-//                    zoneTypeUpdateForProfile = value;
+                    zoneTypeUpdateForProfile = value;
                     zoneTypeByFetchingForProfile = value;
                   });
                   print(value);
@@ -413,7 +386,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
             _streetController.text = _updateStreetController.text;
             _areaController.text = _updateAreaController.text;
             _pCodeController.text = _updatePCodeController.text;
-            _zoneNameController.text  = zoneAreaListSnapshot[int.parse(zoneTypeByFetchingForProfile)].data['zone_name'].toString();
 
           });
           _updateData();
@@ -425,7 +397,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 //                  (Route<dynamic> route) =>
 //              false);
           Navigator.pop(context);
-        }, child: Text('UPDATE',style: TextStyle(color:Color(0xff01783e)))),
+        }, child: Text('UPDATE',style: TextStyle(color:Color(0xff008db9)))),
         FlatButton(onPressed: () {
           Navigator.pop(context);
         }, child: Text('CANCEL',style: TextStyle(color:Color(0xff252525)),)),
@@ -435,22 +407,19 @@ class _UserProfilePageState extends State<UserProfilePage> {
     showDialog(context: context, builder: (_) => alert);
   }
   _updateData() async {
-//    if (_updateFormKey.currentState.validate()) {
+    if (_updateFormKey.currentState.validate()) {
       await Firestore.instance
           .collection('users')
           .document(widget.userDocument.data['uid'])
-          .setData({
+          .updateData({
         'name': _updateNameController.text,
         'phone': _updatePhoneController.text,
-        'street_no': _updateStreetController.text,
-        'house_no': _updateHouseController.text,
+        'street no': _updateStreetController.text,
+        'house no': _updateHouseController.text,
         'area': _updateAreaController.text,
-        'postal_code':_updatePCodeController.text,
-        'zone_name': zoneAreaListSnapshot[int.parse(zoneTypeByFetchingForProfile)].data['zone_name'].toString(),
-        'zone_value': zoneAreaListSnapshot[int.parse(zoneTypeByFetchingForProfile)].data['zone_value'].toString(),
-        'zone_type': zoneTypeByFetchingForProfile,
-      },merge: true);
+        'postal code':_updatePCodeController.text,
+      });
       Fluttertoast.showToast(msg: 'Profile Updated Successfully');
-//    }
+    }
   }
 }

@@ -1,24 +1,17 @@
 import 'dart:convert';
 
-import 'package:al_asar_user/commons/common.dart';
-import 'package:al_asar_user/screens/contact_us.dart';
-import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:awesome_loader/awesome_loader.dart';
-import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:al_asar_user/commons/loading.dart';
-import 'package:al_asar_user/provider/cart_provider.dart';
-import 'package:al_asar_user/provider/user_provider.dart';
-import 'package:al_asar_user/screens/upload_prescription.dart';
-import 'package:al_asar_user/screens/user_profile.dart';
-import 'package:al_asar_user/widgets/featured_products.dart';
-import 'package:al_asar_user/widgets/product_card.dart';
-import 'package:al_asar_user/widgets/search.dart';
+import 'package:meds_at_home/commons/loading.dart';
+import 'package:meds_at_home/provider/cart_provider.dart';
+import 'package:meds_at_home/provider/user_provider.dart';
+import 'package:meds_at_home/screens/upload_prescription.dart';
+import 'package:meds_at_home/screens/user_profile.dart';
+import 'package:meds_at_home/widgets/featured_products.dart';
+import 'package:meds_at_home/widgets/product_card.dart';
+import 'package:meds_at_home/widgets/search.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:splashscreen/splashscreen.dart';
@@ -58,35 +51,6 @@ class _HomePageState extends State<HomePage>
   List<String> images = [];
   List<DocumentSnapshot> productsName = [];
 
-  Future<List<Note>> productsList() async {
-    String url = 'https://globaltodobackend.herokuapp.com/api/v1/medicine';
-    Dio dio = new Dio();
-    dio.options.headers['content-Type'] = 'application/json';
-    dio.options.headers['accept'] = 'application/json';
-
-    Response productListResponse = await dio.get(url);
-
-//    var notes = List<Note>();
-    print("Status Code =  ${productListResponse.statusCode.toString()}");
-    if (productListResponse.statusCode == 200) {
-      setState(() {
-        productsGetList = productListResponse.data;
-        for(var noteJson in productsGetList){
-          productList.add(Note.fromJson(noteJson));
-        }
-//        productListForDisplay = productList;
-      });
-      print("Product List Length = ${productsGetList.length}");
-      print("Product Search Length = ${productList.length}");
-      print("${productList[1].name}");
-
-
-    }
-    if(productListResponse.statusCode != 200){
-      print("Status Code =  ${productListResponse.statusCode.toString()}");
-    }
-    return productList;
-  }
 
   @override
   void initState() {
@@ -94,9 +58,7 @@ class _HomePageState extends State<HomePage>
     _auth = FirebaseAuth.instance;
     _getCurrentUser();
     slider();
-    if(productsGetList == null){
-      productsList();
-    }
+//    product();
   }
   void slider(){
     Firestore.instance
@@ -109,6 +71,19 @@ class _HomePageState extends State<HomePage>
           ]);
       setState(() {images = tempTotal;});
       debugPrint(images.toString());
+    });
+  }
+  void product(){
+    Firestore.instance
+        .collection('products1')
+        .snapshots()
+        .listen((snapshot) {
+      List<DocumentSnapshot> tempTotal = snapshot.documents.fold([], (tot, doc) => tot +
+          [
+            doc
+          ]);
+      setState(() {productsName = tempTotal;});
+      debugPrint(productsName.toString());
     });
   }
 
@@ -131,7 +106,7 @@ class _HomePageState extends State<HomePage>
 
   Future<bool> _onBackPressed() {
     return showDialog(
-
+      
       context: context,
       builder: (context) => new AlertDialog(
         shape: RoundedRectangleBorder(
@@ -142,10 +117,10 @@ class _HomePageState extends State<HomePage>
         actions: <Widget>[
           FlatButton(onPressed: (){
             Navigator.of(context).pop(true);
-          }, child: Text('YES',style: TextStyle(color: Color(0xff01783e)),)),
+          }, child: Text('YES')),
           FlatButton(onPressed: (){
             Navigator.of(context).pop(false);
-          }, child: Text('NO',style: TextStyle(color: Colors.black))),
+          }, child: Text('NO')),
         ],
       ),
     ) ??
@@ -169,27 +144,14 @@ class _HomePageState extends State<HomePage>
     final users = Provider.of<UserProvider>(context);
     return WillPopScope(
       onWillPop: _onBackPressed,
-      child: productsGetList == null
-          ?Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.white,
-        child: Center(
-        child: AwesomeLoader(
-            loaderType: AwesomeLoader.AwesomeLoader2,
-            color: Color(0xff01783e),
-        ),
-      ),
-          )
-
-          : Scaffold(
+      child: Scaffold(
         appBar: new AppBar(
           elevation: 0.0,
           centerTitle: true,
           backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color:  Color(0xff01783e)),
-          title: Image.asset('images/Bar1.png',
-            width: 150,
+          iconTheme: IconThemeData(color:  Color(0xff008db9)),
+          title: Image.asset('images/BarLogo.png',
+            width: 180,
           alignment: Alignment.center,
             ),
           actions: <Widget>[
@@ -210,11 +172,11 @@ class _HomePageState extends State<HomePage>
                   currentAccountPicture: GestureDetector(
                     child: new CircleAvatar(
                       backgroundColor: Colors.white70,
-                      child: Icon(Icons.person, color:  Colors.white,size: 50,),
+                      child: Icon(Icons.person, color:  Color(0xff008db9),size: 50,),
                     ),
                   ),
                   decoration: new BoxDecoration(
-                    color:  Color(0xff01783e),
+                    color:  Color(0xff008db9),
                   ),
                 ),
                 InkWell(
@@ -236,7 +198,7 @@ class _HomePageState extends State<HomePage>
                           )));
                     },
                     title: Text('MY Profile'),
-                    leading: Icon(Icons.person, color:  Color(0xff01783e),),
+                    leading: Icon(Icons.person, color:  Color(0xff008db9),),
                   ),
                 ),
 //            if(users.status == Status.Authenticated)
@@ -246,7 +208,7 @@ class _HomePageState extends State<HomePage>
                       Navigator.push(context, MaterialPageRoute(builder: (context)=> OrderListPage(user: uDoc,)));
                     },
                     title: Text('My Ordes'),
-                    leading: Icon(Icons.shopping_basket, color:  Color(0xff01783e),),
+                    leading: Icon(Icons.shopping_basket, color:  Color(0xff008db9),),
                   ),
                 ),
 
@@ -257,7 +219,7 @@ class _HomePageState extends State<HomePage>
                       Navigator.push(context, MaterialPageRoute(builder: (context)=> CartPage(user: uDoc,)));
                     },
                     title: Text('Shopping Cart'),
-                    leading: Icon(Icons.shopping_cart, color:  Color(0xff01783e)),
+                    leading: Icon(Icons.shopping_cart, color:  Color(0xff008db9)),
                   ),
                 ),
 
@@ -273,10 +235,8 @@ class _HomePageState extends State<HomePage>
 
               InkWell(
                 child: ListTile(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ContactUs()));
-                  },
-                  title: Text('Contact Us'),
+                  onTap: (){},
+                  title: Text('About'),
                   leading: Icon(Icons.help, ),
                 ),
               ),
@@ -286,6 +246,11 @@ class _HomePageState extends State<HomePage>
                   child: ListTile(
                     onTap: (){
                       users.signOut();
+//                      Navigator.pushAndRemoveUntil(
+//                        context,
+//                        MaterialPageRoute(builder: (context) => Login()),
+//                            (Route<dynamic> route) => false,
+//                      );
                     },
                     title: Text('Logout'),
                     leading: Icon(Icons.arrow_back, ),
@@ -314,9 +279,28 @@ class _HomePageState extends State<HomePage>
                             Search(user: uDoc,)));
                       },
                     ),
+//                    new FutureBuilder(
+//                        future: DefaultAssetBundle.of(context)
+//                            .loadString('images/products1.json'),
+//                        builder: (context, snapshot) {
+//                          countries =
+//                          json.decode(snapshot.data.toString().toString()).cast<Map<String, dynamic>>()
+//                              .map<Country>((json) => new Country.fromJson(json)).toList();
+////                      parseJosn(snapshot.data.toString());
+//                          return ListTile(
+//                                  title: Text('Search Medicines here',style: TextStyle(color: Colors.grey),),
+//                                  leading: IconButton(icon: Icon(Icons.search),),
+//                                  onTap: (){
+//                                    Navigator.push(context, MaterialPageRoute(builder: (context) =>
+//                                        Search(productListWidget: countries,user: uDoc,)));
+//                                  },
+//                                );
+//                        }),
+
                   ),
 
                   Padding(padding: const EdgeInsets.only(top: 30.0),),
+//                  image_carousel,
                   Container(
                       child: CarouselSlider(
                         options: CarouselOptions(
@@ -346,13 +330,13 @@ class _HomePageState extends State<HomePage>
                   ),
                   Padding(padding: const EdgeInsets.only(top: 25.0),),
                   Card(
-                    color: Color(0xff01783e),
+                    color: Color(0xff008db9),
                     shape: RoundedRectangleBorder(
                       side: BorderSide(color: Colors.white, width: 2),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: ListTile(
-                      trailing: Icon(Icons.add_a_photo,size: 40,color: Colors.white,),
+                      trailing: Icon(Icons.add_a_photo,size: 40,color: Color(0xff252525),),
                       title: RichText(text: TextSpan(
                         children: [
                           TextSpan(text: '\nUpload Prescription',
@@ -406,7 +390,7 @@ class _HomePageState extends State<HomePage>
   Widget _floatingPanel(){
     return Container(
       decoration: BoxDecoration(
-          color:  Color(0xff01783e),
+          color:  Color(0xff008db9),
           borderRadius: BorderRadius.only(topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
           boxShadow: [
             BoxShadow(
@@ -430,12 +414,7 @@ class _HomePageState extends State<HomePage>
               padding: const EdgeInsets.all(10.0),
               child:  Container(
                 height: MediaQuery.of(context).size.height*.7,
-                child: ListView.builder(
-                  itemCount: productsGetList.length,
-                  itemBuilder: (context,index){
-                    return ProductCard(productMap: productsGetList[index],user: uDoc,);
-                  }),
-
+                child:
 //                new FutureBuilder(
 //                    future: DefaultAssetBundle.of(context)
 //                        .loadString('images/products1.json'),
@@ -448,36 +427,83 @@ class _HomePageState extends State<HomePage>
 //                          ? new ProductCard(productList: countries,user: uDoc,)
 //                          : new Center(child: new CircularProgressIndicator());
 //                    }),
-//                StreamBuilder<QuerySnapshot>(
-//                    stream: Firestore.instance.collection('products').orderBy('name').snapshots(),
-//                    builder: (context, snapshot) {
-//                      if(snapshot.connectionState == ConnectionState.waiting){
-//                        return Loading();
-//                      }
-//                      else if (snapshot.hasData) {
-//                        return
-//                          ListView.builder(
-//                            itemCount: snapshot.data.documents.length,
-//                            itemBuilder: (context, index){
-////                              _updateData(snapshot.data.documents[index],snapshot.data.documents[index]['name'].toString());
-//                              return /*ProductCard(product: snapshot.data.documents[index],user: uDoc,);*/null;
-//                            });
+                StreamBuilder<QuerySnapshot>(
+                    stream: Firestore.instance.collection('products').orderBy('name').snapshots(),
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting){
+                        return Loading();
+                      }
+                      else if (snapshot.hasData) {
+                        return
+                          ListView.builder(
+                            itemCount: snapshot.data.documents.length,
+                            itemBuilder: (context, index){
+//                              _updateData(snapshot.data.documents[index],snapshot.data.documents[index]['name'].toString());
+                              return ProductCard(product: snapshot.data.documents[index],user: uDoc,);
+                            });
 //                          Column(
 //                          children: snapshot.data.documents.map((doc) {
 //                            return ProductCard(product: doc,user: uDoc,);
 //                          }).toList(),
 //                        );
-//                      }
-//                      else {
-//                        return SizedBox();
-//                      }
-//                    }),
+                      }
+                      else {
+                        return SizedBox();
+                      }
+                    }),
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  setSearchParam(String caseNumber) {
+    List<String> caseSearchList = List();
+//    String caseSearchList = '';
+    String temp = "";
+    for (int i = 0; i < caseNumber.length; i++) {
+      temp = temp + caseNumber[i];
+      i = (caseNumber.length)+1;
+//      caseSearchList.add(temp);
+    }
+    return temp;
+  }
+  _updateData(DocumentSnapshot product, String name) async {
+    await Firestore.instance
+        .collection('products1')
+        .document(product.documentID)
+        .updateData({
+      'Search_key': setSearchParam(name),
+    });
+  }
+
+  createSearchKey(){
+    return StreamBuilder<QuerySnapshot>(
+        stream: Firestore.instance.collection('products1').orderBy('name').snapshots(),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Loading();
+          }
+          else if (snapshot.hasData) {
+            return
+              ListView.builder(
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index){
+                    print(snapshot.data.documents[index]['name'].toString());
+                    return _updateData(snapshot.data.documents[index],snapshot.data.documents[index]['name'].toString());
+                  });
+//                          Column(
+//                          children: snapshot.data.documents.map((doc) {
+//                            return ProductCard(product: doc,user: uDoc,);
+//                          }).toList(),
+//                        );
+          }
+          else {
+            return SizedBox();
+          }
+        });
   }
 }
 

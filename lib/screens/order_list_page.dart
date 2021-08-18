@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:al_asar_user/commons/loading.dart';
+import 'package:meds_at_home/commons/loading.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 //import 'search_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -38,7 +38,7 @@ class _OrderListPageState extends State<OrderListPage> {
         elevation: 0.0,
         centerTitle: true,
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xff01783e)),
+        iconTheme: IconThemeData(color: Color(0xff008db9)),
         leading: InkWell(
             onTap: () {
               Navigator.of(context).pop();
@@ -76,9 +76,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                   child: ListTile(
                                     trailing: Icon(Icons.arrow_forward_ios),
-                                    title: Text(doc.data['accept_status']==false
-                                        ?'Order Pending'
-                                        :'Order in Process',style: TextStyle(color: Color(0xff01783e)),),
+                                    title: Text('Order in Process',style: TextStyle(color: Color(0xff008db9)),),
                                     subtitle: Text(timeago.format(
                                         DateTime.tryParse(
                                             doc.data['date'].toDate().toString()))
@@ -110,10 +108,7 @@ class _OrderListPageState extends State<OrderListPage> {
                                   ),
                                   child: ListTile(
                                     trailing: Icon(Icons.arrow_forward_ios),
-                                    title: Text(doc.data['accept_status']==false
-                                        ?'Order Pending'
-                                        :'Order in Process',style: TextStyle(color: Color(0xff01783e)),
-                                    ),
+                                    title: Text('Order in Process',style: TextStyle(color: Color(0xff008db9)),),
                                     subtitle: Text('${timeago.format(
                                         DateTime.tryParse(
                                             doc.data['date'].toDate().toString()))
@@ -139,14 +134,14 @@ class _OrderListPageState extends State<OrderListPage> {
                         else if (snapshot.hasData) {
                           return Column(
                             children: snapshot.data.documents.map((doc) {
-                              if(widget.user.data['uid'] == doc.data['userId']){
+                              if(widget.user.data['uid'] == doc.data['userID']){
                                 return Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(20))
                                   ),
                                   child: ListTile(
                                     trailing: Icon(Icons.arrow_forward_ios),
-                                    title: Text('Order Deliverd Successfully',style: TextStyle(color: Color(0xff01783e)),),
+                                    title: Text('Order Deliverd Successfully',style: TextStyle(color: Color(0xff008db9)),),
                                     subtitle: Text(timeago.format(
                                         DateTime.tryParse(
                                             doc.data['date'].toDate().toString()))
@@ -171,14 +166,14 @@ class _OrderListPageState extends State<OrderListPage> {
                         else if (snapshot.hasData) {
                           return Column(
                             children: snapshot.data.documents.map((doc) {
-                              if(widget.user.data['uid'] == doc.data['userId']) {
+                              if(widget.user.data['uid'] == doc.data['userID']) {
                                 return Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(Radius.circular(20))
                                   ),
                                   child: ListTile(
                                     trailing: Icon(Icons.arrow_forward_ios),
-                                    title: Text('Order Deliverd Successfully',style: TextStyle(color: Color(0xff01783e)),),
+                                    title: Text('Order Deliverd Successfully',style: TextStyle(color: Color(0xff008db9)),),
                                     subtitle: Text('${timeago.format(
                                         DateTime.tryParse(
                                             doc.data['date'].toDate().toString()))
@@ -529,8 +524,6 @@ class _OrderPDetailState extends State<OrderPDetail> {
   TextEditingController _pCodeController;
   TextEditingController _zoneNameController;
   TextEditingController _phoneController;
-  TextEditingController _deliveryAmountController;
-
 
 
   bool onSale = false;
@@ -546,7 +539,7 @@ class _OrderPDetailState extends State<OrderPDetail> {
     _dateController = TextEditingController(text:
     timeago.format(DateTime.tryParse(widget.order.data['date'].toDate().toString())).toString());
 //    _productsTotalController = TextEditingController(text: widget.order.data['total_bill'].toString());
-    _deliveryAmountController = TextEditingController(text: widget.order.data['delivery_amount'].toString());
+//    _deliveryAmountController = TextEditingController(text: widget.order.data['delivery_amount'].toString());
 //    _productsController = TextEditingController(text: widget.order.data['products_details'].toString());
     _pCodeController = TextEditingController(text: widget.order.data['postal_code']);
     _zoneNameController = TextEditingController(text: widget.order.data['zone_name']);
@@ -620,25 +613,7 @@ class _OrderPDetailState extends State<OrderPDetail> {
                     Divider(color: Colors.cyan,),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('Bill Details',
-                    style: TextStyle(color: Colors.cyan,fontSize: 20,fontWeight: FontWeight.bold),),
-                ),
-                Divider(color: Colors.white,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:  Text(' Delivery Amount :\t\t\t\t ${widget.order.data['delivery_amount']}',
-                        style: TextStyle(color: Colors.white,fontSize: 15),),
-                    ),
-                  ],
-                ),
-                Divider(color: Colors.white),
-                Divider(color: Color(0xff008db9),),
-                Divider(color: Color(0xff008db9),),
+
                 Container(
                     child: Column(
                       children: <Widget>[
